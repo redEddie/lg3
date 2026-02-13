@@ -12,7 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from baselines.evaluation import evaluate_baselines, preprocess_hourly_series
+from baseline.baselines.evaluation import evaluate_baselines, preprocess_hourly_series
 
 
 def _top_worst_hours(hourly_mse: List[float], top_k: int = 3) -> List[Tuple[int, float]]:
