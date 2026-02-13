@@ -1,0 +1,22 @@
+[data]
+csv_path = "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv"
+dt_col = "datetime"
+target_col = "Power_1h"
+runs_dir = "runs_lstm24_roll"
+# latest_json = "runs_lstm24_roll/LATEST_RUN.json"
+
+[runtime]
+device = "auto"
+
+[model]
+hidden_size = 32
+
+[metric]
+top_alpha = 0.20
+cos_eps = 1e-8
+share_eps = 1e-6
+day_sum_mask_eps = 1e-3
+
+[output]
+# out_dir = "runs_lstm24_roll/eval_last_midnight_on_own_val_inline_latest"
+default_out_dirname = "eval_last_midnight_on_own_val_inline_latest"
