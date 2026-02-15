@@ -79,7 +79,10 @@ class TrainConfig:
     top_alpha: float
     runs_dir: Path
     device: str
+    model_type: str
     hidden_size: int
+    cnn_channels: int
+    cnn_kernel_size: int
     log_every: int
 
 
@@ -93,7 +96,10 @@ class EvaluateConfig:
     out_dir: Path | None
     default_out_dirname: str
     device: str
+    model_type: str
     hidden_size: int
+    cnn_channels: int
+    cnn_kernel_size: int
     top_alpha: float
     cos_eps: float
     share_eps: float
@@ -207,7 +213,10 @@ def load_train_config(config_path: Path | None = None) -> TrainConfig:
         top_alpha=float(metric.get("top_alpha", 0.20)),
         runs_dir=_resolve_path(str(out.get("runs_dir", "runs_lstm24_roll"))),
         device=str(train.get("device", "auto")),
+        model_type=str(model.get("model_type", "lstm")),
         hidden_size=int(model.get("hidden_size", 32)),
+        cnn_channels=int(model.get("cnn_channels", 32)),
+        cnn_kernel_size=int(model.get("cnn_kernel_size", 5)),
         log_every=int(train.get("log_every", 10)),
     )
 
@@ -234,7 +243,10 @@ def load_evaluate_config(config_path: Path | None = None) -> EvaluateConfig:
         out_dir=None if out_dir_raw is None else _resolve_path(str(out_dir_raw)),
         default_out_dirname=str(output.get("default_out_dirname", "eval_last_midnight_on_own_val_inline_latest")),
         device=str(runtime.get("device", "auto")),
+        model_type=str(model.get("model_type", "lstm")),
         hidden_size=int(model.get("hidden_size", 32)),
+        cnn_channels=int(model.get("cnn_channels", 32)),
+        cnn_kernel_size=int(model.get("cnn_kernel_size", 5)),
         top_alpha=float(metric.get("top_alpha", 0.20)),
         cos_eps=float(metric.get("cos_eps", 1e-8)),
         share_eps=float(metric.get("share_eps", 1e-6)),

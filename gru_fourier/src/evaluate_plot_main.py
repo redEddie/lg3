@@ -14,6 +14,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv-path", type=Path, default=None, help="Override input feature CSV path.")
     parser.add_argument("--latest-json", type=Path, default=None, help="Override latest run manifest path.")
     parser.add_argument("--out-dir", type=Path, default=None, help="Override evaluation output directory.")
+    parser.add_argument(
+        "--model-type",
+        type=str,
+        choices=["lstm", "cnn1d"],
+        default=None,
+        help="Override model type namespace for latest/out-dir defaults.",
+    )
     parser.add_argument("--max-days-per-model", type=int, default=7, help="Max plotted days per model (default: 7).")
     parser.add_argument("--save-plots", action="store_true", help="Also save generated plots to disk.")
     parser.add_argument("--no-show-plots", action="store_true", help="Disable interactive plot windows.")
@@ -30,6 +37,8 @@ def main() -> None:
         cfg = type(cfg)(**{**cfg.__dict__, "latest_json": args.latest_json})
     if args.out_dir is not None:
         cfg = type(cfg)(**{**cfg.__dict__, "out_dir": args.out_dir})
+    if args.model_type is not None:
+        cfg = type(cfg)(**{**cfg.__dict__, "model_type": args.model_type})
 
     show_plots = not args.no_show_plots
 

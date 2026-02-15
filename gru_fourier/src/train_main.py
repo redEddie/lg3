@@ -14,6 +14,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv-path", type=Path, default=None, help="Override input feature CSV path.")
     parser.add_argument("--runs-dir", type=Path, default=None, help="Override runs output directory.")
     parser.add_argument("--epochs", type=int, default=None, help="Override training epochs.")
+    parser.add_argument(
+        "--model-type",
+        type=str,
+        choices=["lstm", "cnn1d"],
+        default=None,
+        help="Override model type (lstm or cnn1d).",
+    )
     return parser.parse_args()
 
 
@@ -26,6 +33,8 @@ def main() -> None:
         cfg = type(cfg)(**{**cfg.__dict__, "runs_dir": args.runs_dir})
     if args.epochs is not None:
         cfg = type(cfg)(**{**cfg.__dict__, "epochs": int(args.epochs)})
+    if args.model_type is not None:
+        cfg = type(cfg)(**{**cfg.__dict__, "model_type": args.model_type})
 
     try:
         from gru_fourier.training.runner import run_training

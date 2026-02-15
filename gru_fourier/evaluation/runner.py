@@ -12,9 +12,9 @@ import torch
 
 from gru_fourier.src.config import EvaluateConfig
 from gru_fourier.training.common import (
-    LSTM24,
     MetricParams,
     cos_centered_np,
+    create_forecast_model,
     diff_rmse_np,
     share_overlap_percent_np,
     share_tv_np,
@@ -91,7 +91,18 @@ def run_evaluation(cfg: EvaluateConfig) -> Path:
 
     df = pd.read_csv(cfg.csv_path, parse_dates=[cfg.dt_col]).set_index(cfg.dt_col).sort_index()
 
-    latest_json = cfg.latest_json if cfg.latest_json is not None else (cfg.runs_dir / "LATEST_RUN.json")
+    model_key = cfg.model_type.strip().lower()
+    model_runs_dir = cfg.runs_dir / model_key
+
+    if cfg.latest_json is not None:
+        latest_json = cfg.latest_json
+    else:
+        latest_json = model_runs_dir / "LATEST_RUN.json"
+        # Backward compatibility: old layout without model subdir
+        if not latest_json.exists():
+            legacy_latest = cfg.runs_dir / "LATEST_RUN.json"
+            if legacy_latest.exists():
+                latest_json = legacy_latest
     if not latest_json.exists():
         raise RuntimeError(f"LATEST_RUN.json not found: {latest_json}")
 
@@ -104,7 +115,7 @@ def run_evaluation(cfg: EvaluateConfig) -> Path:
     if not last_ckpts:
         raise RuntimeError("No 'last' checkpoints found in latest run manifest.")
 
-    out_dir = cfg.out_dir if cfg.out_dir is not None else (cfg.runs_dir / cfg.default_out_dirname)
+    out_dir = cfg.out_dir if cfg.out_dir is not None else (model_runs_dir / cfg.default_out_dirname)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     metric_params = MetricParams(
@@ -171,7 +182,19 @@ def run_evaluation(cfg: EvaluateConfig) -> Path:
             )
             continue
 
-        model = LSTM24(exog_dim=len(exog_cols), horizon=horizon, hidden=cfg.hidden_size).to(device)
+        model_type = str(ckfg.get("MODEL_TYPE", cfg.model_type))
+        hidden_size = int(ckfg.get("HIDDEN_SIZE", cfg.hidden_size))
+        cnn_channels = int(ckfg.get("CNN_CHANNELS", cfg.cnn_channels))
+        cnn_kernel_size = int(ckfg.get("CNN_KERNEL_SIZE", cfg.cnn_kernel_size))
+
+        model = create_forecast_model(
+            model_type=model_type,
+            exog_dim=len(exog_cols),
+            horizon=horizon,
+            hidden_size=hidden_size,
+            cnn_channels=cnn_channels,
+            cnn_kernel_size=cnn_kernel_size,
+        ).to(device)
         model.load_state_dict(ckpt["model_state"], strict=True)
         model.eval()
 

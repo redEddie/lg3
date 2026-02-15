@@ -69,6 +69,79 @@ class LSTM24(nn.Module):
         return self.out_act(self.head(z))
 
 
+class CNN1D24(nn.Module):
+    def __init__(self, exog_dim: int, horizon: int, channels: int = 32, kernel_size: int = 5):
+        super().__init__()
+        if kernel_size < 1 or kernel_size % 2 == 0:
+            raise ValueError("kernel_size must be a positive odd integer.")
+        pad = kernel_size // 2
+        self.conv = nn.Sequential(
+            nn.Conv1d(1, channels, kernel_size=kernel_size, padding=pad),
+            nn.ReLU(),
+            nn.Conv1d(channels, channels, kernel_size=kernel_size, padding=pad),
+            nn.ReLU(),
+        )
+        self.pool = nn.AdaptiveAvgPool1d(1)
+        self.exog_mlp = nn.Sequential(
+            nn.Linear(horizon * exog_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+        )
+        self.head = nn.Sequential(
+            nn.Linear(channels + 64, 128),
+            nn.ReLU(),
+            nn.Linear(128, horizon),
+        )
+        self.out_act = nn.Softplus(beta=1.0, threshold=20.0)
+
+    def forward(self, x_power: torch.Tensor, x_exog_future: torch.Tensor) -> torch.Tensor:
+        # x_power: (B, L, 1) -> (B, 1, L)
+        x = x_power.transpose(1, 2)
+        h = self.conv(x)
+        h = self.pool(h).squeeze(-1)
+
+        bsz = x_exog_future.size(0)
+        ex = x_exog_future.reshape(bsz, -1)
+        ex = self.exog_mlp(ex)
+
+        z = torch.cat([h, ex], dim=1)
+        return self.out_act(self.head(z))
+
+
+def create_forecast_model(
+    model_type: str,
+    exog_dim: int,
+    horizon: int,
+    hidden_size: int = 32,
+    cnn_channels: int = 32,
+    cnn_kernel_size: int = 5,
+) -> nn.Module:
+    m = model_type.strip().lower()
+    if m == "lstm":
+        return LSTM24(exog_dim=exog_dim, horizon=horizon, hidden=hidden_size)
+    if m in {"cnn1d", "1d-cnn", "cnn"}:
+        return CNN1D24(
+            exog_dim=exog_dim,
+            horizon=horizon,
+            channels=cnn_channels,
+            kernel_size=cnn_kernel_size,
+        )
+    raise ValueError(f"Unsupported model_type: {model_type}. Use 'lstm' or 'cnn1d'.")
+
+
+def model_signature(
+    model_type: str,
+    hidden_size: int,
+    cnn_channels: int,
+    cnn_kernel_size: int,
+) -> str:
+    m = model_type.strip().lower()
+    if m == "lstm":
+        return f"LSTM24(hidden={hidden_size})+exogMLP+Softplus"
+    return f"CNN1D24(channels={cnn_channels},kernel={cnn_kernel_size})+exogMLP+Softplus"
+
+
 def seed_all(seed: int) -> None:
     torch.manual_seed(seed)
     np.random.seed(seed)

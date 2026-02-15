@@ -8,14 +8,32 @@
 1. 전처리
 `python3 -m gru_fourier.src.preprocess_main --config gru_fourier/config/preprocess.toml`
 2. 학습
-`python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml`
+    2-1. LSTM
+    `python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml`
+    2-2. 1D-CNN
+    `python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml --model-type cnn1d`
 3. 평가
-`python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml`
+    3-1. LSTM
+    `python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml`
+    3-2. 1D-CNN
+    `python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml --model-type cnn1d`
 4. 평가(시각화)
-`python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots`
+    4-1. LSTM
+    `python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots`
+    4-2. 1D-CNN
+    `python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots --model-type cnn1d`
 
 
 # 결과
+## 1D-CNN
+| METRIC  | 1D-CNN@400epoch(@best) |
+|---------|------------------------|
+| RMSE    | 32.099621(29.364378)   |
+| dRMSE   | 36.099621              |
+| cosC    | 0.5459                 |
+| IoU     | 0.3250                 |
+| shareOv | 57.64%                 |
+
 ## [성능평가법]
 | METRIC  | VALUE   | DESCRIPTION |
 |---------|---------|-------------|

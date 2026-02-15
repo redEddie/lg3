@@ -19,7 +19,10 @@ valid_hours = 168
 step_hours = 168
 
 [model]
+model_type = "lstm" # options: "lstm", "cnn1d"
 hidden_size = 32
+cnn_channels = 32
+cnn_kernel_size = 5
 
 [train]
 batch_size = 64

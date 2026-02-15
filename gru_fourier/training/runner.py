@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
-from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
@@ -17,12 +15,13 @@ from torch.utils.data import DataLoader
 from gru_fourier.src.config import TrainConfig
 
 from .common import (
-    LSTM24,
     MetricParams,
     Power24Dataset,
     build_total_loss_fn,
+    create_forecast_model,
     eval_all_metrics,
     make_t_list_in_range,
+    model_signature,
     seed_all,
 )
 
@@ -91,13 +90,17 @@ def run_training(cfg: TrainConfig) -> Path:
         f"val={idx[windows[0][2]]}~{idx[windows[0][3]-1]}"
     )
 
+    model_key = cfg.model_type.strip().lower()
+    model_runs_dir = cfg.runs_dir / model_key
+    model_runs_dir.mkdir(parents=True, exist_ok=True)
+
     run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-    exp_dir = cfg.runs_dir / f"exp_{run_id}"
+    exp_dir = model_runs_dir / f"exp_{run_id}"
     ckpt_flat_dir = exp_dir / "ckpts_flat"
     exp_dir.mkdir(parents=True, exist_ok=True)
     ckpt_flat_dir.mkdir(parents=True, exist_ok=True)
 
-    latest_json = cfg.runs_dir / "LATEST_RUN.json"
+    latest_json = model_runs_dir / "LATEST_RUN.json"
     manifest = {
         "run_id": run_id,
         "created_at": datetime.now().isoformat(timespec="seconds"),
@@ -164,7 +167,14 @@ def run_training(cfg: TrainConfig) -> Path:
         dl_val = DataLoader(ds_val, batch_size=cfg.batch_size, shuffle=False, drop_last=False)
 
         seed_all(cfg.seed)
-        model = LSTM24(exog_dim=len(exog_cols), horizon=cfg.horizon, hidden=cfg.hidden_size).to(device)
+        model = create_forecast_model(
+            model_type=cfg.model_type,
+            exog_dim=len(exog_cols),
+            horizon=cfg.horizon,
+            hidden_size=cfg.hidden_size,
+            cnn_channels=cfg.cnn_channels,
+            cnn_kernel_size=cfg.cnn_kernel_size,
+        ).to(device)
         opt = torch.optim.AdamW(model.parameters(), lr=cfg.lr, weight_decay=cfg.weight_decay)
 
         best_val_rmse = float("inf")
@@ -255,7 +265,16 @@ def run_training(cfg: TrainConfig) -> Path:
             "EPOCHS": cfg.epochs,
             "BATCH_SIZE": cfg.batch_size,
             "GRAD_CLIP": cfg.grad_clip,
-            "MODEL": f"LSTM24(hidden={cfg.hidden_size})+exogMLP+Softplus",
+            "MODEL_TYPE": cfg.model_type,
+            "HIDDEN_SIZE": cfg.hidden_size,
+            "CNN_CHANNELS": cfg.cnn_channels,
+            "CNN_KERNEL_SIZE": cfg.cnn_kernel_size,
+            "MODEL": model_signature(
+                model_type=cfg.model_type,
+                hidden_size=cfg.hidden_size,
+                cnn_channels=cfg.cnn_channels,
+                cnn_kernel_size=cfg.cnn_kernel_size,
+            ),
         }
 
         last_payload = {
