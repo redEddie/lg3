@@ -1,0 +1,77 @@
+{
+  "run_id": "20260213_171255",
+  "created_at": "2026-02-13T17:12:55",
+  "exp_dir": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255",
+  "ckpts": [
+    {
+      "type": "last",
+      "wi": 1,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0001_TR20250715-20250811_VA20250812-20250818.pt"
+    },
+    {
+      "type": "best",
+      "wi": 1,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0001_TR20250715-20250811_VA20250812-20250818.pt"
+    },
+    {
+      "type": "last",
+      "wi": 2,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0002_TR20250722-20250818_VA20250819-20250825.pt"
+    },
+    {
+      "type": "best",
+      "wi": 2,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0002_TR20250722-20250818_VA20250819-20250825.pt"
+    },
+    {
+      "type": "last",
+      "wi": 3,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0003_TR20250729-20250825_VA20250826-20250901.pt"
+    },
+    {
+      "type": "best",
+      "wi": 3,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0003_TR20250729-20250825_VA20250826-20250901.pt"
+    },
+    {
+      "type": "last",
+      "wi": 4,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0004_TR20250805-20250901_VA20250902-20250908.pt"
+    },
+    {
+      "type": "best",
+      "wi": 4,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0004_TR20250805-20250901_VA20250902-20250908.pt"
+    },
+    {
+      "type": "last",
+      "wi": 5,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0005_TR20250812-20250908_VA20250909-20250915.pt"
+    },
+    {
+      "type": "best",
+      "wi": 5,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0005_TR20250812-20250908_VA20250909-20250915.pt"
+    },
+    {
+      "type": "last",
+      "wi": 6,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0006_TR20250819-20250915_VA20250916-20250922.pt"
+    },
+    {
+      "type": "best",
+      "wi": 6,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0006_TR20250819-20250915_VA20250916-20250922.pt"
+    },
+    {
+      "type": "last",
+      "wi": 7,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/last_w0007_TR20250826-20250922_VA20250923-20250929.pt"
+    },
+    {
+      "type": "best",
+      "wi": 7,
+      "path": "/home/jeonchanwook/Documents/Github/lg3/runs_lstm24_roll/lstm/exp_20260213_171255/ckpts_flat/best_w0007_TR20250826-20250922_VA20250923-20250929.pt"
+    }
+  ]
+}

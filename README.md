@@ -1,38 +1,66 @@
-## [실행 방법]
-사용가능한 옵션 보는 법. 
+## 🚀 실행 방법 (Usage)
 
-`python -m gru_fourier.src.preprocess_main --help`
-`python -m gru_fourier.src.train_main --help`
-`python -m gru_fourier.src.evaluate_main --help`
+각 단계별 실행 옵션은 --help 플래그를 통해 확인할 수 있습니다.
 
-1. 전처리
-`python3 -m gru_fourier.src.preprocess_main --config gru_fourier/config/preprocess.toml`
-2. 학습
-    2-1. LSTM
-    `python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml`
-    2-2. 1D-CNN
-    `python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml --model-type cnn1d`
-3. 평가
-    3-1. LSTM
-    `python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml`
-    3-2. 1D-CNN
-    `python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml --model-type cnn1d`
-4. 평가(시각화)
-    4-1. LSTM
-    `python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots`
-    4-2. 1D-CNN
-    `python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots --model-type cnn1d`
+```bash
+python3 -m gru_fourier.src.preprocess_main --help
+python3 -m gru_fourier.src.train_main --help
+python3 -m gru_fourier.src.evaluate_main --help
+```
 
+### 1. 데이터 전처리 (Preprocessing)
+
+```bash
+python3 -m gru_fourier.src.preprocess_main --config gru_fourier/config/preprocess.toml
+```
+
+### 2. 모델 학습 (Training)
+
+* **LSTM (기본)**
+```bash
+python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml
+```
+
+* **1D-CNN**
+```bash
+python3 -m gru_fourier.src.train_main --config gru_fourier/config/train.toml --model-type cnn1d
+```
+
+### 3. 성능 평가 (Evaluation)
+
+* **LSTM**
+```bash
+python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml
+```
+
+* **1D-CNN**
+```bash
+python3 -m gru_fourier.src.evaluate_main --config gru_fourier/config/evaluate.toml --model-type cnn1d
+```
+
+### 4. 결과 시각화 (Visualization)
+
+* **LSTM**
+```bash
+python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots
+```
+
+* **1D-CNN**
+```bash
+python3 -m gru_fourier.src.evaluate_plot_main --config gru_fourier/config/evaluate.toml --save-plots --model-type cnn1d
+```
 
 # 결과
 ## 1D-CNN
-| METRIC  | 1D-CNN@400epoch(@best) |
-|---------|------------------------|
-| RMSE    | 32.099621(29.364378)   |
-| dRMSE   | 36.099621              |
-| cosC    | 0.5459                 |
-| IoU     | 0.3250                 |
-| shareOv | 57.64%                 |
+last=400epoch, window=0007
+
+| METRIC  | LSTM@0007 | 1D-CNN@0007 |
+|---------|-----------|-------------|
+| RMSE    | 46.2322   | 31.6983     |
+| dRMSE   | 40.1051   | 38.0844     |
+| cosC    | 0.5708    | 0.6038      |
+| IoU     | 0.1803    | 0.2993      |
+| shareOv | 60.72%    | 62.65%      |
 
 ## [성능평가법]
 | METRIC  | VALUE   | DESCRIPTION |
