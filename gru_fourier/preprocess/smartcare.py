@@ -18,7 +18,9 @@ def identify_valid_slots(
     if cnt.empty:
         return pd.Series(dtype=bool, index=cnt.index)
 
-    units_ok = pd.Series(True, index=cnt.index) if n_units <= 0 else (cnt.notna().sum(axis=1) == n_units)
+    units_ok = (
+        pd.Series(True, index=cnt.index) if n_units <= 0 else (cnt.notna().sum(axis=1) == n_units)
+    )
     sample_ok = (
         pd.Series(True, index=cnt.index)
         if min_required_per_unit <= 0
@@ -47,7 +49,9 @@ def preprocess_smartcare_tod_1h(
     df["slot"] = df.index.ceil(freq)
 
     expected_per_unit = int(round(3600.0 / sample_interval_sec))
-    min_required = 0 if per_unit_min_ratio <= 0 else int(np.floor(expected_per_unit * per_unit_min_ratio))
+    min_required = (
+        0 if per_unit_min_ratio <= 0 else int(np.floor(expected_per_unit * per_unit_min_ratio))
+    )
 
     cnt = df.groupby(["slot", "Auto Id"])["Tod"].count().unstack("Auto Id")
     valid_slots = identify_valid_slots(cnt, n_units=n_units, min_required_per_unit=min_required)

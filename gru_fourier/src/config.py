@@ -154,7 +154,9 @@ def load_preprocess_config(config_path: Path | None = None) -> PreprocessConfig:
             fourier_fit_hours=int(site_raw.get("fourier_fit_hours", 14 * 24)),
             fourier_pred_hours=int(site_raw.get("fourier_pred_hours", 24)),
             fourier_ridge_l2=float(site_raw.get("fourier_ridge_l2", 1e-2)),
-            fourier_carry_forward_on_missing=bool(site_raw.get("fourier_carry_forward_on_missing", True)),
+            fourier_carry_forward_on_missing=bool(
+                site_raw.get("fourier_carry_forward_on_missing", True)
+            ),
             weather_interpolate_linear=bool(site_raw.get("weather_interpolate_linear", True)),
             weather_interpolate_limit=(
                 None
@@ -184,7 +186,14 @@ def load_train_config(config_path: Path | None = None) -> TrainConfig:
     model = raw.get("model", {})
 
     return TrainConfig(
-        csv_path=_resolve_path(str(data.get("csv_path", "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv"))),
+        csv_path=_resolve_path(
+            str(
+                data.get(
+                    "csv_path",
+                    "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv",
+                )
+            )
+        ),
         dt_col=str(data.get("dt_col", "datetime")),
         target_col=str(data.get("target_col", "Power_1h")),
         exog_cols_base=list(feature.get("exog_cols_base", ["is_holiday", "day_sin", "day_cos"])),
@@ -235,13 +244,22 @@ def load_evaluate_config(config_path: Path | None = None) -> EvaluateConfig:
     out_dir_raw = output.get("out_dir", None)
 
     return EvaluateConfig(
-        csv_path=_resolve_path(str(data.get("csv_path", "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv"))),
+        csv_path=_resolve_path(
+            str(
+                data.get(
+                    "csv_path",
+                    "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv",
+                )
+            )
+        ),
         dt_col=str(data.get("dt_col", "datetime")),
         target_col=str(data.get("target_col", "Power_1h")),
         runs_dir=_resolve_path(str(data.get("runs_dir", "runs_lstm24_roll"))),
         latest_json=None if latest_json_raw is None else _resolve_path(str(latest_json_raw)),
         out_dir=None if out_dir_raw is None else _resolve_path(str(out_dir_raw)),
-        default_out_dirname=str(output.get("default_out_dirname", "eval_last_midnight_on_own_val_inline_latest")),
+        default_out_dirname=str(
+            output.get("default_out_dirname", "eval_last_midnight_on_own_val_inline_latest")
+        ),
         device=str(runtime.get("device", "auto")),
         model_type=str(model.get("model_type", "lstm")),
         hidden_size=int(model.get("hidden_size", 32)),

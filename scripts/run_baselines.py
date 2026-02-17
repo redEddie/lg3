@@ -27,8 +27,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--csv", required=True, help="Input CSV path")
     parser.add_argument("--time-col", required=True, help="Datetime column name")
     parser.add_argument("--target-col", required=True, help="Target column name")
-    parser.add_argument("--fourier-k", type=int, choices=[1, 2], default=2, help="Fourier harmonics")
-    parser.add_argument("--stride-hours", type=int, default=24, help="Sliding window stride in hours")
+    parser.add_argument(
+        "--fourier-k", type=int, choices=[1, 2], default=2, help="Fourier harmonics"
+    )
+    parser.add_argument(
+        "--stride-hours", type=int, default=24, help="Sliding window stride in hours"
+    )
     parser.add_argument("--output-dir", default="outputs", help="Directory for output artifacts")
     return parser.parse_args()
 

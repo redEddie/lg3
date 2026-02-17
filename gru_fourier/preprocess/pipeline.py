@@ -115,9 +115,7 @@ def run_preprocess(site: "SiteConfig") -> pd.DataFrame:
 
     t0 = _step_start("merge all features")
     df_all = (
-        df_time.join(smart_1h, how="left")
-        .join(power_1h, how="left")
-        .join(weather_1h, how="left")
+        df_time.join(smart_1h, how="left").join(power_1h, how="left").join(weather_1h, how="left")
     )
     df_all["fourier_base_midnight"] = fourier_midnight
     _step_end("merge all features", t0, rows=len(df_all))

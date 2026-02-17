@@ -14,7 +14,9 @@ def last_output_hold_baseline(history: np.ndarray, horizon: int = 24) -> np.ndar
     return np.full(horizon, last_value, dtype=float)
 
 
-def naive_persistence_baseline(history: np.ndarray, horizon: int = 24, period: int = 24) -> np.ndarray:
+def naive_persistence_baseline(
+    history: np.ndarray, horizon: int = 24, period: int = 24
+) -> np.ndarray:
     """Seasonal-naive forecast using values from one period earlier."""
     if len(history) < period:
         raise ValueError(f"history length must be >= period ({period}).")
@@ -43,7 +45,9 @@ def _build_fourier_design_matrix(timesteps: Sequence[int], k: int) -> np.ndarray
     return np.column_stack(cols)
 
 
-def fourier_trend_baseline(history: np.ndarray, horizon: int = 24, fourier_k: int = 2) -> np.ndarray:
+def fourier_trend_baseline(
+    history: np.ndarray, horizon: int = 24, fourier_k: int = 2
+) -> np.ndarray:
     """Fit trend + daily Fourier OLS on history and extrapolate for next steps."""
     if fourier_k < 1:
         raise ValueError("fourier_k must be >= 1.")
@@ -59,6 +63,7 @@ def fourier_trend_baseline(history: np.ndarray, horizon: int = 24, fourier_k: in
     x_future = _build_fourier_design_matrix(t_future, k=fourier_k)
     y_pred = x_future @ coef
     return y_pred.astype(float)
+
 
 __all__ = [
     "last_output_hold_baseline",

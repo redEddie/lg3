@@ -20,7 +20,9 @@ class MetricParams:
 
 
 class Power24Dataset(Dataset):
-    def __init__(self, y: np.ndarray, xe: np.ndarray, t_list: np.ndarray, lookback: int, horizon: int):
+    def __init__(
+        self, y: np.ndarray, xe: np.ndarray, t_list: np.ndarray, lookback: int, horizon: int
+    ):
         self.y = y
         self.xe = xe
         self.t_list = t_list
@@ -209,7 +211,9 @@ def share_overlap_percent_np(y_pred: np.ndarray, y_true: np.ndarray, eps: float)
     return float(100.0 * np.mean(overlap))
 
 
-def share_tv_np(y_pred: np.ndarray, y_true: np.ndarray, eps: float, day_sum_mask_eps: float) -> float:
+def share_tv_np(
+    y_pred: np.ndarray, y_true: np.ndarray, eps: float, day_sum_mask_eps: float
+) -> float:
     y_true_pos = np.clip(y_true, 0.0, None)
     y_pred_pos = np.clip(y_pred, 0.0, None)
     sum_t = np.sum(y_true_pos + eps, axis=1, keepdims=True)

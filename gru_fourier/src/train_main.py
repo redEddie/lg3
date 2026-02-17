@@ -10,9 +10,15 @@ from .config import DEFAULT_TRAIN_CONFIG_PATH, load_train_config
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run rolling LSTM24 training.")
-    parser.add_argument("--config", type=Path, default=DEFAULT_TRAIN_CONFIG_PATH, help="Path to train TOML config.")
-    parser.add_argument("--csv-path", type=Path, default=None, help="Override input feature CSV path.")
-    parser.add_argument("--runs-dir", type=Path, default=None, help="Override runs output directory.")
+    parser.add_argument(
+        "--config", type=Path, default=DEFAULT_TRAIN_CONFIG_PATH, help="Path to train TOML config."
+    )
+    parser.add_argument(
+        "--csv-path", type=Path, default=None, help="Override input feature CSV path."
+    )
+    parser.add_argument(
+        "--runs-dir", type=Path, default=None, help="Override runs output directory."
+    )
     parser.add_argument("--epochs", type=int, default=None, help="Override training epochs.")
     parser.add_argument(
         "--model-type",

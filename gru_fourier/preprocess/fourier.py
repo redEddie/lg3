@@ -21,7 +21,9 @@ def add_bias_column(x: np.ndarray) -> np.ndarray:
     return np.concatenate([ones, x], axis=1)
 
 
-def make_fourier_design(n_rows: int, k_harmonics: int, period: float, start_offset: int = 0) -> np.ndarray:
+def make_fourier_design(
+    n_rows: int, k_harmonics: int, period: float, start_offset: int = 0
+) -> np.ndarray:
     t = np.arange(start_offset, start_offset + n_rows, dtype=float)
     return add_bias_column(build_fourier_basis(t, k_harmonics, period))
 
@@ -49,7 +51,9 @@ class FourierSeasonalityModel:
 
 def extract_fit_window(power_1h: pd.Series, t0: pd.Timestamp, fit_hours: int) -> np.ndarray | None:
     fit_start = t0 - pd.Timedelta(hours=fit_hours)
-    y_fit = power_1h.loc[(power_1h.index >= fit_start) & (power_1h.index < t0)].to_numpy(dtype=float)
+    y_fit = power_1h.loc[(power_1h.index >= fit_start) & (power_1h.index < t0)].to_numpy(
+        dtype=float
+    )
     if len(y_fit) != fit_hours:
         return None
     if np.any(~np.isfinite(y_fit)):
@@ -57,7 +61,9 @@ def extract_fit_window(power_1h: pd.Series, t0: pd.Timestamp, fit_hours: int) ->
     return y_fit
 
 
-def predict_next_window(model: FourierSeasonalityModel, fit_hours: int, pred_hours: int) -> np.ndarray:
+def predict_next_window(
+    model: FourierSeasonalityModel, fit_hours: int, pred_hours: int
+) -> np.ndarray:
     return model.predict(pred_hours, start_offset=fit_hours)
 
 
