@@ -78,7 +78,9 @@ def build_midnight_val_t_list(
 
 
 @torch.no_grad()
-def infer_one(model, y: np.ndarray, xe: np.ndarray, t: int, lookback: int, horizon: int, device: str):
+def infer_one(
+    model, y: np.ndarray, xe: np.ndarray, t: int, lookback: int, horizon: int, device: str
+):
     x_power = torch.from_numpy(y[t - lookback : t][:, None]).float().unsqueeze(0).to(device)
     x_exog = torch.from_numpy(xe[t : t + horizon, :]).float().unsqueeze(0).to(device)
     y_pred = model(x_power, x_exog).squeeze(0).detach().cpu().numpy().astype(np.float32)
@@ -281,7 +283,9 @@ def run_evaluation_with_plots(
             save_path = None
             if save_plots:
                 safe = run_name.replace(":", "").replace(" ", "_")
-                save_path = plots_dir / safe / f"w{wi:04d}_day_{i:03d}_{day_ts.strftime('%Y%m%d')}.png"
+                save_path = (
+                    plots_dir / safe / f"w{wi:04d}_day_{i:03d}_{day_ts.strftime('%Y%m%d')}.png"
+                )
             _plot_one_day(
                 run_name=run_name,
                 day_start_ts=day_ts,

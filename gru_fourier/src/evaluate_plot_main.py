@@ -10,10 +10,21 @@ from .config import DEFAULT_EVALUATE_CONFIG_PATH, load_evaluate_config
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate latest checkpoints and show plots.")
-    parser.add_argument("--config", type=Path, default=DEFAULT_EVALUATE_CONFIG_PATH, help="Path to evaluate TOML config.")
-    parser.add_argument("--csv-path", type=Path, default=None, help="Override input feature CSV path.")
-    parser.add_argument("--latest-json", type=Path, default=None, help="Override latest run manifest path.")
-    parser.add_argument("--out-dir", type=Path, default=None, help="Override evaluation output directory.")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_EVALUATE_CONFIG_PATH,
+        help="Path to evaluate TOML config.",
+    )
+    parser.add_argument(
+        "--csv-path", type=Path, default=None, help="Override input feature CSV path."
+    )
+    parser.add_argument(
+        "--latest-json", type=Path, default=None, help="Override latest run manifest path."
+    )
+    parser.add_argument(
+        "--out-dir", type=Path, default=None, help="Override evaluation output directory."
+    )
     parser.add_argument(
         "--model-type",
         type=str,
@@ -21,10 +32,21 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Override model type namespace for latest/out-dir defaults.",
     )
-    parser.add_argument("--max-days-per-model", type=int, default=7, help="Max plotted days per model (default: 7).")
-    parser.add_argument("--save-plots", action="store_true", help="Also save generated plots to disk.")
-    parser.add_argument("--no-show-plots", action="store_true", help="Disable interactive plot windows.")
-    parser.add_argument("--plots-dirname", type=str, default="plots", help="Subdirectory under out-dir for plot files.")
+    parser.add_argument(
+        "--max-days-per-model", type=int, default=7, help="Max plotted days per model (default: 7)."
+    )
+    parser.add_argument(
+        "--save-plots", action="store_true", help="Also save generated plots to disk."
+    )
+    parser.add_argument(
+        "--no-show-plots", action="store_true", help="Disable interactive plot windows."
+    )
+    parser.add_argument(
+        "--plots-dirname",
+        type=str,
+        default="plots",
+        help="Subdirectory under out-dir for plot files.",
+    )
     return parser.parse_args()
 
 

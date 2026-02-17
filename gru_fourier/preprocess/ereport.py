@@ -78,7 +78,9 @@ def preprocess_ereport_power_1h(
     freq: str = "1h",
 ) -> pd.DataFrame:
     if "Power" not in df_ereport.columns:
-        raise ValueError(f"'Power' column is missing in EREPORT data: {df_ereport.columns.tolist()}")
+        raise ValueError(
+            f"'Power' column is missing in EREPORT data: {df_ereport.columns.tolist()}"
+        )
 
     df = df_ereport.copy()
     df["Power"] = pd.to_numeric(df["Power"], errors="coerce")
@@ -116,7 +118,11 @@ def preprocess_ereport_power_1h(
         grid = pd.date_range(start=w_end - pd.Timedelta(freq) + step, end=w_end, freq=step)
         obs_set = set(obs_series.index)
         missing_times = [t for t in grid if t not in obs_set]
-        probe = missing_times[:: max(1, len(missing_times) // 10)] if len(missing_times) > 10 else missing_times
+        probe = (
+            missing_times[:: max(1, len(missing_times) // 10)]
+            if len(missing_times) > 10
+            else missing_times
+        )
         past_nonzero, future_nonzero = _infer_gap_activity(obs_series, probe)
 
         p_adj = calculate_power_adjustment(

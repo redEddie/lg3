@@ -120,9 +120,15 @@ def evaluate_baselines(
 
         preds = {
             "last_output_hold": last_output_hold_baseline(history_vals, horizon=horizon_hours),
-            "naive_persistence": naive_persistence_baseline(history_vals, horizon=horizon_hours, period=24),
-            "weekly_hour_mean": weekly_hour_mean_baseline(history_series, forecast_index=future_index),
-            "fourier_trend": fourier_trend_baseline(history_vals, horizon=horizon_hours, fourier_k=fourier_k),
+            "naive_persistence": naive_persistence_baseline(
+                history_vals, horizon=horizon_hours, period=24
+            ),
+            "weekly_hour_mean": weekly_hour_mean_baseline(
+                history_series, forecast_index=future_index
+            ),
+            "fourier_trend": fourier_trend_baseline(
+                history_vals, horizon=horizon_hours, fourier_k=fourier_k
+            ),
         }
 
         for name, y_hat in preds.items():

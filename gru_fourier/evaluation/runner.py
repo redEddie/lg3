@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 import numpy as np
@@ -78,7 +77,9 @@ def build_midnight_val_t_list(
 
 
 @torch.no_grad()
-def infer_one(model, y: np.ndarray, xe: np.ndarray, t: int, lookback: int, horizon: int, device: str):
+def infer_one(
+    model, y: np.ndarray, xe: np.ndarray, t: int, lookback: int, horizon: int, device: str
+):
     x_power = torch.from_numpy(y[t - lookback : t][:, None]).float().unsqueeze(0).to(device)
     x_exog = torch.from_numpy(xe[t : t + horizon, :]).float().unsqueeze(0).to(device)
     y_pred = model(x_power, x_exog).squeeze(0).detach().cpu().numpy().astype(np.float32)

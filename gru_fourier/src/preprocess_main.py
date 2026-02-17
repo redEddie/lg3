@@ -11,7 +11,12 @@ from .preprocess import run_preprocess
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run preprocessing for GRU Fourier project.")
-    parser.add_argument("--config", type=Path, default=DEFAULT_PREPROCESS_CONFIG_PATH, help="Path to preprocess TOML config.")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_PREPROCESS_CONFIG_PATH,
+        help="Path to preprocess TOML config.",
+    )
     parser.add_argument("--site", type=str, default=None, help="Site key under [sites] in config.")
     parser.add_argument("--output-dir", type=Path, default=None, help="Override output directory.")
     return parser.parse_args()

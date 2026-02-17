@@ -86,8 +86,8 @@ def run_training(cfg: TrainConfig) -> Path:
 
     print(f"[INFO] rows={n_rows}, windows={len(windows)}")
     print(
-        f"[INFO] first window train={idx[windows[0][0]]}~{idx[windows[0][1]-1]} | "
-        f"val={idx[windows[0][2]]}~{idx[windows[0][3]-1]}"
+        f"[INFO] first window train={idx[windows[0][0]]}~{idx[windows[0][1] - 1]} | "
+        f"val={idx[windows[0][2]]}~{idx[windows[0][3] - 1]}"
     )
 
     model_key = cfg.model_type.strip().lower()
@@ -142,7 +142,9 @@ def run_training(cfg: TrainConfig) -> Path:
         )
 
         if len(t_list_train) == 0 or len(t_list_val) == 0:
-            print(f"[WARN] window {wi:04d}: skip (train_t={len(t_list_train)}, val_t={len(t_list_val)})")
+            print(
+                f"[WARN] window {wi:04d}: skip (train_t={len(t_list_train)}, val_t={len(t_list_val)})"
+            )
             continue
 
         tr_start_dt = idx[tr_s]
@@ -199,8 +201,8 @@ def run_training(cfg: TrainConfig) -> Path:
                 total_loss_sum += float(loss.item())
                 n_batches += 1
 
-            train_rmse, train_drmse, train_cos, train_iou, train_shov, train_shtv = eval_all_metrics(
-                model, dl_train, device, metric_params
+            train_rmse, train_drmse, train_cos, train_iou, train_shov, train_shtv = (
+                eval_all_metrics(model, dl_train, device, metric_params)
             )
             val_rmse, val_drmse, val_cos, val_iou, val_shov, val_shtv = eval_all_metrics(
                 model, dl_val, device, metric_params
@@ -289,7 +291,9 @@ def run_training(cfg: TrainConfig) -> Path:
         }
         torch.save(last_payload, last_path)
         torch.save(last_payload, flat_last_path)
-        manifest["ckpts"].append({"type": "last", "wi": int(wi), "path": str(flat_last_path.resolve())})
+        manifest["ckpts"].append(
+            {"type": "last", "wi": int(wi), "path": str(flat_last_path.resolve())}
+        )
 
         if best_state is not None:
             best_payload = {
@@ -302,7 +306,9 @@ def run_training(cfg: TrainConfig) -> Path:
             }
             torch.save(best_payload, best_path)
             torch.save(best_payload, flat_best_path)
-            manifest["ckpts"].append({"type": "best", "wi": int(wi), "path": str(flat_best_path.resolve())})
+            manifest["ckpts"].append(
+                {"type": "best", "wi": int(wi), "path": str(flat_best_path.resolve())}
+            )
 
     with latest_json.open("w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)

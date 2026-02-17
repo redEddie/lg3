@@ -10,10 +10,21 @@ from .config import DEFAULT_EVALUATE_CONFIG_PATH, load_evaluate_config
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate latest rolling run checkpoints.")
-    parser.add_argument("--config", type=Path, default=DEFAULT_EVALUATE_CONFIG_PATH, help="Path to evaluate TOML config.")
-    parser.add_argument("--csv-path", type=Path, default=None, help="Override input feature CSV path.")
-    parser.add_argument("--latest-json", type=Path, default=None, help="Override latest run manifest path.")
-    parser.add_argument("--out-dir", type=Path, default=None, help="Override evaluation output directory.")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_EVALUATE_CONFIG_PATH,
+        help="Path to evaluate TOML config.",
+    )
+    parser.add_argument(
+        "--csv-path", type=Path, default=None, help="Override input feature CSV path."
+    )
+    parser.add_argument(
+        "--latest-json", type=Path, default=None, help="Override latest run manifest path."
+    )
+    parser.add_argument(
+        "--out-dir", type=Path, default=None, help="Override evaluation output directory."
+    )
     parser.add_argument(
         "--model-type",
         type=str,
