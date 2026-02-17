@@ -1,0 +1,65 @@
+[global]
+default_site = "ohsungsa_f2"
+output_dir = "processed_data"
+
+[sites.ohsungsa_f2]
+smartcare_dir = "data/ohsungsa_2f/LOG_SMARTCARE"
+smartcare_pattern = "LOG_SMARTCARE_*.csv"
+ereport_dir = "data/ohsungsa_2f/DBG_EREPORT"
+ereport_pattern = "DBG_EREPORT_*.csv"
+weather_csv = "hduck/OBS_ASOS_TIM_20250701_20250930_OS 1.csv"
+
+start = "2025-07-01 00:00:00"
+end = "2025-09-30 23:00:00"
+out_filename = "preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv"
+
+include_weekends_as_holiday = true
+holiday_dates = [
+  "2025-07-05",
+  "2025-07-06",
+  "2025-07-12",
+  "2025-07-13",
+  "2025-07-19",
+  "2025-07-20",
+  "2025-07-26",
+  "2025-07-27",
+  "2025-08-02",
+  "2025-08-03",
+  "2025-08-09",
+  "2025-08-10",
+  "2025-08-12",
+  "2025-08-15",
+  "2025-08-16",
+  "2025-08-17",
+  "2025-08-23",
+  "2025-08-24",
+  "2025-08-30",
+  "2025-08-31",
+  "2025-09-06",
+  "2025-09-07",
+  "2025-09-13",
+  "2025-09-14",
+  "2025-09-20",
+  "2025-09-21",
+  "2025-09-27",
+  "2025-09-28",
+]
+
+power_coverage_threshold = 0.85
+smart_per_unit_min_ratio = 0.70
+n_units = 7
+smart_sample_sec = 5
+
+fourier_s = 168.0
+fourier_k = 10
+fourier_fit_hours = 336
+fourier_pred_hours = 24
+fourier_ridge_l2 = 1e-2
+fourier_carry_forward_on_missing = true
+
+weather_interpolate_linear = true
+weather_interpolate_limit = 3
+
+forced_off_ranges = [
+  ["2025-08-11 22:00:00", "2025-08-13 00:00:00"],
+]

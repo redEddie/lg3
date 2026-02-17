@@ -1,0 +1,8 @@
+data
+data/
+__pycache__/
+*.pyc
+.env
+.vscode/
+.DS_Store
+runs_lstm24_roll/

@@ -1,0 +1,49 @@
+[data]
+csv_path = "processed_data/preprocessed_1h_master_with_weather_delta_20250701_20250930_ohsungsa_f2.csv"
+dt_col = "datetime"
+target_col = "Power_1h"
+
+[feature]
+exog_cols_base = ["is_holiday", "day_sin", "day_cos"]
+fourier_col = "fourier_base_midnight"
+weather_cols = ["Temperature", "Humidity"]
+use_tod = false
+tod_col = "Tod_1h"
+
+[window]
+lookback = 168
+horizon = 24
+buffer_hours = 336
+train_hours = 672
+valid_hours = 168
+step_hours = 168
+
+[model]
+model_type = "lstm" # options: "lstm", "cnn1d"
+hidden_size = 32
+cnn_channels = 32
+cnn_kernel_size = 5
+
+[train]
+batch_size = 64
+epochs = 400
+lr = 0.001
+weight_decay = 0.0001
+grad_clip = 5.0
+seed = 42
+device = "auto"
+log_every = 10
+
+[loss]
+lambda_diff = 1.0
+lambda_cos = 1.0
+lambda_share = 0.0
+
+[metric]
+cos_eps = 1e-8
+share_eps = 1e-6
+day_sum_mask_eps = 1e-3
+top_alpha = 0.20
+
+[output]
+runs_dir = "runs_lstm24_roll"
