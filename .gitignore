@@ -5,3 +5,4 @@ __pycache__/
 .env
 .vscode/
 .DS_Store
+runs_lstm24_roll/

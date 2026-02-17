@@ -1,3 +1,28 @@
+## 개발 환경 정리 (Conda + Ruff)
+
+아래 명령으로 `<python_env>` 환경을 기준으로 lint/fix/format을 실행할 수 있습니다.
+
+```bash
+# 방법 1) 환경을 활성화한 뒤 실행
+conda activate <python_env>
+ruff check .
+ruff check . --fix
+ruff format .
+
+# 방법 2) 한 줄 실행 (환경 활성화 없이)
+conda run -n <python_env> ruff check .
+conda run -n <python_env> ruff check . --fix
+conda run -n <python_env> ruff format .
+```
+
+`pyproject.toml`에 Ruff 설정과 기본 의존성이 정리되어 있습니다.
+
+Ruff의 핵심 기능은 아래 3가지입니다.
+
+- lint: 잠재 버그/나쁜 스타일/불필요 코드 검사 (`ruff check`)
+- fix: 자동 수정 가능한 항목 바로 고침 (`ruff check --fix`)
+- format: 코드 포맷 통일 (`ruff format`)
+
 ## 🚀 실행 방법 (Usage)
 
 각 단계별 실행 옵션은 --help 플래그를 통해 확인할 수 있습니다.
