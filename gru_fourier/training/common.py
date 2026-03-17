@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.utils.data import Dataset
 
 
@@ -111,6 +112,119 @@ class CNN1D24(nn.Module):
         return self.out_act(self.head(z))
 
 
+class MinGRU24(nn.Module):
+    """Linearized GRU (minGRU / Mamba-2 SSD style).
+
+    Gates depend only on input — hidden-state recurrence is removed from gate
+    computation, turning the recurrence into a diagonal linear form:
+
+        z_t = σ(W_z · x_t)                 # update gate  (input-only)
+        h̃_t = W_h · x_t                    # candidate    (linear, no tanh)
+        h_t = (1 − z_t) · h_{t-1} + z_t · h̃_t
+
+    Because z_t and h̃_t are input-only, they are computed for the whole
+    sequence in **two matmuls** (parallel).  Hidden states are then obtained
+    via either:
+      • sequential element-wise scan  (stable, default), or
+      • parallel log-space scan  (fully parallel, opt-in via ``parallel=True``).
+
+    Ref: "Were RNNs All We Needed?" (Feng et al., 2024) — minGRU / minLSTM
+    """
+
+    def __init__(
+        self,
+        exog_dim: int,
+        horizon: int,
+        hidden: int = 64,
+        parallel: bool = False,
+    ):
+        super().__init__()
+        self.hidden = hidden
+        self.parallel = parallel
+        # Gate and candidate — input-only projections
+        self.linear_z = nn.Linear(1, hidden)
+        self.linear_h = nn.Linear(1, hidden)
+
+        self.exog_mlp = nn.Sequential(
+            nn.Linear(horizon * exog_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+        )
+        self.head = nn.Sequential(
+            nn.Linear(hidden + 64, 128),
+            nn.ReLU(),
+            nn.Linear(128, horizon),
+        )
+        self.out_act = nn.Softplus(beta=1.0, threshold=20.0)
+
+    # ------------------------------------------------------------------ #
+    #  Scan implementations                                                #
+    # ------------------------------------------------------------------ #
+    @staticmethod
+    def _scan_sequential(
+        z: torch.Tensor, h_tilde: torch.Tensor
+    ) -> torch.Tensor:
+        """Sequential element-wise scan.  O(L) cheap element-wise ops.
+
+        Returns the **final** hidden state  (B, D).
+        """
+        B, L, D = z.shape
+        h = torch.zeros(B, D, device=z.device, dtype=z.dtype)
+        for t in range(L):
+            h = (1 - z[:, t]) * h + z[:, t] * h_tilde[:, t]
+        return h
+
+    @staticmethod
+    def _scan_parallel(
+        gate_logit: torch.Tensor, h_tilde: torch.Tensor
+    ) -> torch.Tensor:
+        """Parallel log-space scan (positive/negative decomposition).
+
+        Numerically stable via log(1−z) = −softplus(logit) and
+        ``torch.logcumsumexp``.  Returns the **final** hidden state  (B, D).
+        """
+        # log-space forget / update factors
+        log_1mz = -F.softplus(gate_logit)            # log(1 − z)
+        a_star = torch.cumsum(log_1mz, dim=1)        # (B, L, D)
+
+        z = torch.sigmoid(gate_logit)
+        b = z * h_tilde                               # (B, L, D)
+
+        # Decompose b into positive / negative for log-space cumsum
+        eps = 1e-38
+        log_b_pos = torch.log(F.relu(b) + eps) - a_star
+        log_b_neg = torch.log(F.relu(-b) + eps) - a_star
+
+        h_pos = torch.exp(a_star + torch.logcumsumexp(log_b_pos, dim=1))
+        h_neg = torch.exp(a_star + torch.logcumsumexp(log_b_neg, dim=1))
+
+        return (h_pos - h_neg)[:, -1, :]              # final state (B, D)
+
+    # ------------------------------------------------------------------ #
+    #  Forward                                                             #
+    # ------------------------------------------------------------------ #
+    def forward(
+        self, x_power: torch.Tensor, x_exog_future: torch.Tensor
+    ) -> torch.Tensor:
+        B = x_power.size(0)
+
+        # ── parallel gate + candidate computation (two matmuls) ──
+        gate_logit = self.linear_z(x_power)           # (B, L, D)
+        h_tilde = self.linear_h(x_power)              # (B, L, D)
+
+        # ── scan ──
+        if self.parallel:
+            h = self._scan_parallel(gate_logit, h_tilde)
+        else:
+            z = torch.sigmoid(gate_logit)
+            h = self._scan_sequential(z, h_tilde)
+
+        # ── exog + prediction head ──
+        ex = self.exog_mlp(x_exog_future.reshape(B, -1))
+        return self.out_act(self.head(torch.cat([h, ex], dim=1)))
+
+
 def create_forecast_model(
     model_type: str,
     exog_dim: int,
@@ -129,7 +243,16 @@ def create_forecast_model(
             channels=cnn_channels,
             kernel_size=cnn_kernel_size,
         )
-    raise ValueError(f"Unsupported model_type: {model_type}. Use 'lstm' or 'cnn1d'.")
+    if m == "mingru":
+        return MinGRU24(exog_dim=exog_dim, horizon=horizon, hidden=hidden_size)
+    if m == "mingru-parallel":
+        return MinGRU24(
+            exog_dim=exog_dim, horizon=horizon, hidden=hidden_size, parallel=True
+        )
+    raise ValueError(
+        f"Unsupported model_type: {model_type}. "
+        "Use 'lstm', 'cnn1d', 'mingru', or 'mingru-parallel'."
+    )
 
 
 def model_signature(
@@ -141,6 +264,9 @@ def model_signature(
     m = model_type.strip().lower()
     if m == "lstm":
         return f"LSTM24(hidden={hidden_size})+exogMLP+Softplus"
+    if m in {"mingru", "mingru-parallel"}:
+        par = ",parallel" if m == "mingru-parallel" else ""
+        return f"MinGRU24(hidden={hidden_size}{par})+exogMLP+Softplus"
     return f"CNN1D24(channels={cnn_channels},kernel={cnn_kernel_size})+exogMLP+Softplus"
 
 

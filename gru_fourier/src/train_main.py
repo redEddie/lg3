@@ -23,9 +23,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model-type",
         type=str,
-        choices=["lstm", "cnn1d"],
+        choices=["lstm", "cnn1d", "mingru", "mingru-parallel"],
         default=None,
-        help="Override model type (lstm or cnn1d).",
+        help="Override model type (lstm, cnn1d, mingru, or mingru-parallel).",
     )
     return parser.parse_args()
 
